@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 
-	lmots "github.com/LoCCS/lmots/core"
+	"github.com/LoCCS/lmots"
 	"github.com/LoCCS/lmots/rand"
 )
 

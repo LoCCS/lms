@@ -1,6 +1,6 @@
 package lms
 
-import lmotscore "github.com/LoCCS/lmots/core"
+import "github.com/LoCCS/lmots"
 
 // merge estimates the hash for (left||right)
 func merge(left, right []byte) []byte {
@@ -14,7 +14,7 @@ func merge(left, right []byte) []byte {
 }
 
 // HashPk computes the hash value for a LM-OTS public key
-func HashPk(pk *lmotscore.PublicKey) []byte {
+func HashPk(pk *lmots.PublicKey) []byte {
 	h := HashFunc()
 
 	//h.Write(pk.I)

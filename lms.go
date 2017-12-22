@@ -8,7 +8,6 @@ import (
 	"encoding/binary"
 
 	"github.com/LoCCS/lmots"
-	lmotscore "github.com/LoCCS/lmots/core"
 	"github.com/LoCCS/lmots/rand"
 )
 
@@ -108,14 +107,14 @@ func (agent *MerkleAgent) Traverse() {
 //	according to MSS
 type MerkleSig struct {
 	Leaf   uint32
-	LeafPk *lmotscore.PublicKey
-	LMSig  *lmotscore.Sig
+	LeafPk *lmots.PublicKey
+	LMSig  *lmots.Sig
 
 	Auth [][]byte
 }
 
 // Sign produces a Merkle signature
-func Sign(agent *MerkleAgent, hash []byte) (*lmotscore.PrivateKey, *MerkleSig, error) {
+func Sign(agent *MerkleAgent, hash []byte) (*lmots.PrivateKey, *MerkleSig, error) {
 	merkleSig := new(MerkleSig)
 	merkleSig.Leaf = agent.keyItr.Offset()
 
@@ -129,7 +128,7 @@ func Sign(agent *MerkleAgent, hash []byte) (*lmotscore.PrivateKey, *MerkleSig, e
 	if err != nil {
 		return nil, nil, err
 	}
-	merkleSig.LMSig, err = lmotscore.Sign(rand.Reader, sk, hash)
+	merkleSig.LMSig, err = lmots.Sign(rand.Reader, sk, hash)
 	if nil != err {
 		return nil, nil, errors.New("unexpected error occurs during signing")
 	}
@@ -158,7 +157,7 @@ func Sign(agent *MerkleAgent, hash []byte) (*lmotscore.PrivateKey, *MerkleSig, e
 
 // Verify verifies a Merkle signature
 func Verify(root []byte, hash []byte, merkleSig *MerkleSig) bool {
-	if (nil == merkleSig) || (!lmotscore.Verify(merkleSig.LeafPk, hash, merkleSig.LMSig)) {
+	if (nil == merkleSig) || (!lmots.Verify(merkleSig.LeafPk, hash, merkleSig.LMSig)) {
 		//fmt.Println("***ots failed")
 		return false
 	}

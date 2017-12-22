@@ -7,7 +7,7 @@ import (
 	"github.com/LoCCS/lmots/rand"
 )
 
-func BenchmarkMSSSetup(b *testing.B) {
+func BenchmarkLMSSetup(b *testing.B) {
 	const H = 16
 	seed := make([]byte, lmots.N)
 	rand.Reader.Read(seed)
@@ -19,7 +19,7 @@ func BenchmarkMSSSetup(b *testing.B) {
 	}
 }
 
-func BenchmarkMSSStd(b *testing.B) {
+func BenchmarkLMSStdOps(b *testing.B) {
 	const H = 16
 	seed := make([]byte, lmots.N)
 	rand.Reader.Read(seed)
