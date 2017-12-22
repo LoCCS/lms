@@ -11,10 +11,10 @@ import (
 )
 
 const (
-	H = 8 // the height of the merkle tree
+	H = 16 // the height of the merkle tree
 )
 
-func TestLMS(t *testing.T) {
+func TestLMSApp(t *testing.T) {
 	//seed, err := rand.RandSeed()
 	seed := make([]byte, lmots.N)
 	rand.Reader.Read(seed)
@@ -46,6 +46,8 @@ func TestLMS(t *testing.T) {
 		message := make([]byte, lmots.N)
 		rand.Reader.Read(message)
 		signStart := time.Now()
+
+		//seed00 := merkleAgent.keyItr.rng.Seed()
 		_, sig, err := Sign(merkleAgent, message)
 		signTime := time.Since(signStart)
 		if err != nil {
@@ -75,6 +77,15 @@ func TestLMS(t *testing.T) {
 			success++
 		} else {
 			failure++
+			/*
+				fmt.Println("************************************")
+				fmt.Printf("msg: %x\n", message)
+				fmt.Printf("seed: %x\n", seed00)
+				//fmt.Println("sk: ", sk00)
+				fmt.Println("pk: ", &sk00.PublicKey)
+				fmt.Println("************************************")
+			*/
+			return
 		}
 
 	}
@@ -88,7 +99,7 @@ func TestLMS(t *testing.T) {
 
 }
 
-func TestMSSStd(t *testing.T) {
+func TestLMSStd(t *testing.T) {
 	seed := make([]byte, lmots.N)
 	rand.Reader.Read(seed)
 	merkleAgent, err := NewMerkleAgent(H, seed)

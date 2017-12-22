@@ -1,6 +1,6 @@
 # The Leighton-Micali Signature [LMS]  
 
-![version tag](https://img.shields.io/badge/lms-v1.1-blue.svg) 
+![version tag](https://img.shields.io/badge/lms-v1.2-blue.svg) 
 ![build status](https://img.shields.io/badge/build-passing-brightgreen.svg)  
 
 Copyright (c) 2017-2018 LoCCS.  

@@ -3,6 +3,7 @@ package lms
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"math"
 
 	"encoding/binary"
@@ -114,18 +115,32 @@ type MerkleSig struct {
 	Auth [][]byte
 }
 
+func (sig *MerkleSig) String() string {
+	ss := "{"
+	ss += fmt.Sprintf(" leaf: %v,\n", sig.Leaf)
+	ss += " LeafPk: {\n"
+	ss += fmt.Sprintf("  opts: %x,\n", sig.LeafPk.LMOpts.Serialize())
+	ss += fmt.Sprintf("  K: %x,\n", sig.LeafPk.K)
+	ss += " },\n"
+	ss += " Sig: "
+	ss += sig.LMSig.String()
+	ss += "\n}"
+
+	return ss
+}
+
 // Sign produces a Merkle signature
 func Sign(agent *MerkleAgent, hash []byte) (*lmots.PrivateKey, *MerkleSig, error) {
 	merkleSig := new(MerkleSig)
 	merkleSig.Leaf = agent.keyItr.Offset()
 
-	// TODO: adapt for *WtnOpts
 	offset := agent.keyItr.Offset()
 	if offset >= (1 << agent.H) {
 		return nil, nil, errors.New("key pairs on the tree are totally used")
 	}
 
 	sk, err := agent.keyItr.Next()
+	//sk00 = sk
 	if err != nil {
 		return nil, nil, err
 	}
@@ -159,7 +174,8 @@ func Sign(agent *MerkleAgent, hash []byte) (*lmots.PrivateKey, *MerkleSig, error
 // Verify verifies a Merkle signature
 func Verify(root []byte, hash []byte, merkleSig *MerkleSig) bool {
 	if (nil == merkleSig) || (!lmots.Verify(merkleSig.LeafPk, hash, merkleSig.LMSig)) {
-		//fmt.Println("***ots failed")
+		//fmt.Println("merkleSig: \n", merkleSig)
+		fmt.Println("***ots failed")
 		return false
 	}
 
