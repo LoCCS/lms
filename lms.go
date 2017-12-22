@@ -42,7 +42,8 @@ func NewMerkleAgent(H uint32, seed []byte) (*MerkleAgent, error) {
 		if err != nil {
 			return nil, err
 		}
-		agent.nodeHouse[i] = HashPk(&sk.PublicKey)
+		//agent.nodeHouse[i] = HashPk(&sk.PublicKey)
+		agent.nodeHouse[i] = hashOTSPk(&sk.PublicKey, agent.H)
 	}
 	globalStack := NewTreeHashStack(0, H+1)
 	for h := uint32(0); h < H; h++ {
@@ -168,8 +169,8 @@ func Verify(root []byte, hash []byte, merkleSig *MerkleSig) bool {
 	//hashFunc := config.HashFunc()
 	hashFunc := HashFunc()
 
-	//parentHash := wots.HashPk(merkleSig.LeafPk)
-	parentHash := HashPk(merkleSig.LeafPk)
+	//parentHash := HashPk(merkleSig.LeafPk)
+	parentHash := hashOTSPk(merkleSig.LeafPk, uint32(H))
 	for h := 0; h < H; h++ {
 		hashFunc.Reset()
 		if 1 == idx%2 { // idx is odd, i.e., a right node
