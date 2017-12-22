@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	H = 16 // the height of the merkle tree
+	H = 8 // the height of the merkle tree
 )
 
 func TestLMSApp(t *testing.T) {
@@ -33,12 +33,12 @@ func TestLMSApp(t *testing.T) {
 	var maxver time.Duration
 	success := 0
 	failure := 0
-	for i := 0; i < 1<<H+2; i++ {
+	for i := 0; i < 1<<H + 1; i++ {
 
 		if i%1837 == 0 {
 			fmt.Printf("Success %v, failure %v\n", success, failure)
 			mBytes := merkleAgent.Serialize()
-			sBytes := merkleAgent.SerializeSecret()
+			sBytes := merkleAgent.SerializeSecretKey()
 			merkleAgent = RebuildMerkleAgent(mBytes, sBytes)
 		}
 
@@ -48,7 +48,11 @@ func TestLMSApp(t *testing.T) {
 		signStart := time.Now()
 
 		//seed00 := merkleAgent.keyItr.rng.Seed()
-		_, sig, err := Sign(merkleAgent, message)
+		_, sigraw, err := Sign(merkleAgent, message)
+
+
+
+
 		signTime := time.Since(signStart)
 		if err != nil {
 			fmt.Println(err)
@@ -56,6 +60,8 @@ func TestLMSApp(t *testing.T) {
 				continue
 			}
 		}
+		sigBytes := sigraw.Serialize()
+		sig := DeserializeMerkleSig(sigBytes)
 		signSum += signTime
 		if signTime > maxsig {
 			maxsig = signTime
