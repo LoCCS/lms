@@ -13,7 +13,7 @@ import (
 )
 
 // MerkleAgent implements a agent working
-//	according to the Merkle signature scheme
+// according to the Merkle signature scheme
 type MerkleAgent struct {
 	H              uint32
 	auth           [][]byte
@@ -24,7 +24,7 @@ type MerkleAgent struct {
 }
 
 // NewMerkleAgent makes a fresh Merkle signing routine
-//	by running the generate key and setup procedure
+// by running the generate key and setup procedure
 func NewMerkleAgent(H uint32, seed []byte) (*MerkleAgent, error) {
 	if H < 2 {
 		return nil, errors.New("H should be larger than 1")
@@ -106,7 +106,7 @@ func (agent *MerkleAgent) Traverse() {
 }
 
 // MerkleSig is the container for the signature generated
-//	according to MSS
+// according to MSS
 type MerkleSig struct {
 	Leaf   uint32
 	LeafPk *lmots.PublicKey
@@ -209,7 +209,8 @@ func (agent *MerkleAgent) Root() []byte {
 	return agent.root
 }
 
-//Serialize encodes all the information about the merkle tree that can be stored as plaintext
+// Serialize encodes all the information about the merkle tree
+// that can be stored as plaintext
 func (agent *MerkleAgent) Serialize() []byte {
 	//size := config.Size
 	size := lmots.N
@@ -232,12 +233,13 @@ func (agent *MerkleAgent) Serialize() []byte {
 	return ret
 }
 
-//SerializeSecret encodes all the secret data which shall be encrypted
+// SerializeSecret encodes all the secret data which shall be encrypted
 func (agent *MerkleAgent) SerializeSecretKey() []byte {
 	return agent.keyItr.Serialize()
 }
 
-//RebuildMerkleAgent restores the merkle agent from serialized bytes and secret bytes
+// RebuildMerkleAgent restores the merkle agent from serialized bytes
+// and secret bytes
 func RebuildMerkleAgent(plain []byte, secret []byte) *MerkleAgent {
 	agent := &MerkleAgent{}
 	seed := make([]byte, lmots.N)
@@ -269,19 +271,19 @@ func RebuildMerkleAgent(plain []byte, secret []byte) *MerkleAgent {
 	return agent
 }
 
-//Serialize encodes the merklesig
-func (sig *MerkleSig)Serialize() []byte{
+// Serialize encodes the merklesig
+func (sig *MerkleSig) Serialize() []byte {
 	sigBytes := make([]byte, 4)
 	binary.LittleEndian.PutUint32(sigBytes[0:4], sig.Leaf)
 	optsBytes := sig.LeafPk.LMOpts.Serialize()
 	sigBytes = append(sigBytes, optsBytes...)
 	size := len(sig.LeafPk.K)
 
-	pbBytes := make([]byte, 2 + size)
+	pbBytes := make([]byte, 2+size)
 	binary.LittleEndian.PutUint16(pbBytes[0:2], uint16(size))
 	offset := 2
 
-	copy(pbBytes[offset: offset + size], sig.LeafPk.K)
+	copy(pbBytes[offset:offset+size], sig.LeafPk.K)
 	offset += size
 
 	sigBytes = append(sigBytes, pbBytes...)
@@ -293,53 +295,53 @@ func (sig *MerkleSig)Serialize() []byte{
 	if h > 0 && sig.Auth[0] != nil {
 		size = len(sig.Auth[0])
 	}
-	auBytes := make([]byte, 2 + 2 + h * size)
-	binary.LittleEndian.PutUint16(auBytes[0:2],  uint16(h))
+	auBytes := make([]byte, 2+2+h*size)
+	binary.LittleEndian.PutUint16(auBytes[0:2], uint16(h))
 	binary.LittleEndian.PutUint16(auBytes[2:4], uint16(size))
 	offset = 4
-	for _, au := range sig.Auth{
-		copy(auBytes[offset: offset + size], au)
+	for _, au := range sig.Auth {
+		copy(auBytes[offset:offset+size], au)
 		offset += size
 	}
 	sigBytes = append(sigBytes, auBytes...)
 	return sigBytes
 }
 
-//DeserializeMerkleSig the merklesig struct from bytes
-func DeserializeMerkleSig (sigBytes []byte) *MerkleSig{
+// DeserializeMerkleSig the merklesig struct from bytes
+func DeserializeMerkleSig(sigBytes []byte) *MerkleSig {
 	ms := &MerkleSig{}
 	ms.Leaf = binary.LittleEndian.Uint32(sigBytes[0:4])
 	offset := 4
 	var lmts lmots.LMOpts
 	success := lmts.Deserialize(sigBytes[4:])
-	if !success{
+	if !success {
 		fmt.Printf("Failure in deserialize LMOpts")
 		return nil
 	}
 	offset += int(sigBytes[offset]) + 1
 	offset += int(sigBytes[offset]) + 1
 	offset += int(sigBytes[offset]) + 1
-	size := int(binary.LittleEndian.Uint16(sigBytes[offset:offset+2]))
+	size := int(binary.LittleEndian.Uint16(sigBytes[offset : offset+2]))
 	offset += 2
-	K := sigBytes[offset: offset+size]
+	K := sigBytes[offset : offset+size]
 	ms.LeafPk = &lmots.PublicKey{
 		LMOpts: &lmts,
-		K: K,
+		K:      K,
 	}
 	offset += size
 	ms.LMSig = lmots.DeserializeSig(sigBytes[offset:])
 	offset += 4
-	cLen := int(binary.LittleEndian.Uint16(sigBytes[offset:offset+2]))
+	cLen := int(binary.LittleEndian.Uint16(sigBytes[offset : offset+2]))
 	offset += cLen + 2
-	sNum := int(binary.LittleEndian.Uint16(sigBytes[offset:offset+2]))
-	size = int(binary.LittleEndian.Uint16(sigBytes[offset+2:offset+4]))
-	offset += 4 + sNum * size
-	h := int(binary.LittleEndian.Uint16(sigBytes[offset:offset+2]))
-	size = int(binary.LittleEndian.Uint16(sigBytes[offset+2:offset+4]))
+	sNum := int(binary.LittleEndian.Uint16(sigBytes[offset : offset+2]))
+	size = int(binary.LittleEndian.Uint16(sigBytes[offset+2 : offset+4]))
+	offset += 4 + sNum*size
+	h := int(binary.LittleEndian.Uint16(sigBytes[offset : offset+2]))
+	size = int(binary.LittleEndian.Uint16(sigBytes[offset+2 : offset+4]))
 	offset += 4
 	Auth := make([][]byte, h)
-	for i := 0; i < h; i++{
-		Auth[i] = sigBytes[offset:offset+size]
+	for i := 0; i < h; i++ {
+		Auth[i] = sigBytes[offset : offset+size]
 		offset += size
 	}
 	ms.Auth = Auth
@@ -347,6 +349,7 @@ func DeserializeMerkleSig (sigBytes []byte) *MerkleSig{
 	return ms
 }
 
-func (agent *MerkleAgent) GetLeaf() uint32{
+// GetLeaf returns the index of next leaf to use
+func (agent *MerkleAgent) GetLeaf() uint32 {
 	return agent.keyItr.Offset()
 }

@@ -22,7 +22,7 @@ func (node *Node) String() string {
 }
 
 // TreeHashStack is a stack tracing the running state
-//	of the tree hash algo
+// of the tree hash algo
 type TreeHashStack struct {
 	leaf      uint32       // zero-based index of starting leaf
 	leafUpper uint32       // the global upper bound of leaves for this tree hash instance
@@ -42,7 +42,7 @@ func NewTreeHashStack(startingLeaf, h uint32) *TreeHashStack {
 }
 
 // Init initializes the tree hash instance to target specific height
-//	and the range of leaves
+// and the range of leaves
 func (th *TreeHashStack) Init(startingLeaf, h uint32) error {
 
 	th.leaf, th.leafUpper, th.height = startingLeaf, startingLeaf+(1<<h), h
@@ -58,7 +58,7 @@ func (th *TreeHashStack) IsCompleted() bool {
 }
 
 // LowestTailHeight returns the lowest height of tail nodes
-//	in this tree hash instance
+// in this tree hash instance
 func (th *TreeHashStack) LowestTailHeight() uint32 {
 	if th.nodeStack.Empty() {
 		return th.height
@@ -79,7 +79,7 @@ func (th *TreeHashStack) Top() *Node {
 }
 
 // Update executes numOp updates on the instance, and
-//	add on the new leaf derived by keyItr if necessary
+// add on the new leaf derived by keyItr if necessary
 func (th *TreeHashStack) Update(numOp uint32, nodeHouse [][]byte) {
 
 	for (numOp > 0) && !th.IsCompleted() {
@@ -113,9 +113,9 @@ func (th *TreeHashStack) Update(numOp uint32, nodeHouse [][]byte) {
 }
 
 // Serialize encodes the Treehashstack as
-//	+---------------------------------------------------------+
-//	|	stackLen||elementSize||element||element||...||element||
-//	+---------------------------------------------------------+
+// +---------------------------------------------------------+
+// |	stackLen||elementSize||element||element||...||element| |
+// +---------------------------------------------------------+
 // elements are put from bottom to top
 func (th *TreeHashStack) Serialize() []byte {
 	stackSize := uint32(th.nodeStack.Len())
@@ -141,7 +141,7 @@ func (th *TreeHashStack) Serialize() []byte {
 	return ret
 }
 
-//RebuildTreeHashStack restores the TreeHashStack from serialized bytes
+// RebuildTreeHashStack restores the TreeHashStack from serialized bytes
 func RebuildTreeHashStack(stackBytes []byte) *TreeHashStack {
 	th := &TreeHashStack{}
 

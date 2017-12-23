@@ -33,7 +33,7 @@ func TestLMSApp(t *testing.T) {
 	var maxver time.Duration
 	success := 0
 	failure := 0
-	for i := 0; i < 1<<H + 1; i++ {
+	for i := 0; i < 1<<H+1; i++ {
 
 		if i%1837 == 0 {
 			fmt.Printf("Success %v, failure %v\n", success, failure)
@@ -47,11 +47,7 @@ func TestLMSApp(t *testing.T) {
 		rand.Reader.Read(message)
 		signStart := time.Now()
 
-		//seed00 := merkleAgent.keyItr.rng.Seed()
 		_, sigraw, err := Sign(merkleAgent, message)
-
-
-
 
 		signTime := time.Since(signStart)
 		if err != nil {
@@ -83,15 +79,6 @@ func TestLMSApp(t *testing.T) {
 			success++
 		} else {
 			failure++
-			/*
-				fmt.Println("************************************")
-				fmt.Printf("msg: %x\n", message)
-				fmt.Printf("seed: %x\n", seed00)
-				//fmt.Println("sk: ", sk00)
-				fmt.Println("pk: ", &sk00.PublicKey)
-				fmt.Println("************************************")
-			*/
-			return
 		}
 
 	}
@@ -105,7 +92,7 @@ func TestLMSApp(t *testing.T) {
 
 }
 
-func TestLMSStd(t *testing.T) {
+func TestLMSStdOps(t *testing.T) {
 	seed := make([]byte, lmots.N)
 	rand.Reader.Read(seed)
 	merkleAgent, err := NewMerkleAgent(H, seed)
@@ -117,13 +104,10 @@ func TestLMSStd(t *testing.T) {
 	msg := make([]byte, lmots.N)
 	rand.Reader.Read(msg)
 
-	//t.Logf("msg: %x\n", msg)
 	_, sig, err := Sign(merkleAgent, msg)
 	if nil != err {
 		t.Fatalf("error in signing %x", msg)
 	}
-
-	//t.Logf("merkleSig: %+v\n", sig)
 
 	if !Verify(merkleAgent.Root(), msg, sig) {
 		t.Fatal("verification failed")

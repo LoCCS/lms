@@ -9,7 +9,7 @@ import (
 )
 
 // TestKeyIteratorSerialize checks the serialization/deserialization
-//	between KeyIterator and bytes slice
+// between KeyIterator and bytes slice
 func TestKeyIteratorSerialize(t *testing.T) {
 	seed := make([]byte, lmots.N)
 	rand.Reader.Read(seed)
@@ -31,8 +31,8 @@ func TestKeyIteratorSerialize(t *testing.T) {
 }
 
 // TestKeyIteratorExec tests correctness KeyIterator, including
-//	normal running (demo by iter) and recovered running from
-//	seed (demo by iter2)
+// normal running (demo by iter) and recovered running from
+// seed (demo by iter2)
 func TestKeyIteratorExec(t *testing.T) {
 	seed := make([]byte, lmots.N)
 	rand.Reader.Read(seed)

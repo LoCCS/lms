@@ -17,18 +17,8 @@ func merge(left, right []byte) []byte {
 	return h.Sum(nil)
 }
 
-/*
-// HashPk computes the hash value for a LM-OTS public key
-func HashPk(pk *lmots.PublicKey) []byte {
-	h := HashFunc()
-
-	//h.Write(pk.I)
-	//h.Write(lmotscore.D_LEAF)
-	h.Write(pk.K)
-
-	return h.Sum(nil)
-}*/
-
+// hashOTSPk estimates the value for a leaf by its bounded
+// OTS public key
 func hashOTSPk(pk *lmots.PublicKey, H uint32) []byte {
 	sh := HashFunc()
 

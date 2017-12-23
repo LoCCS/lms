@@ -26,7 +26,6 @@ func NewKeyIterator(compactSeed []byte) *KeyIterator {
 
 	prkg.rng = rand.New(compactSeed)
 	prkg.offset = 0
-	//prkg.LMOpts = new(lmots.LMOpts)
 	prkg.LMOpts = lmots.NewLMOpts()
 
 	return prkg
@@ -78,7 +77,8 @@ func (prkg *KeyIterator) Next() (*lmots.PrivateKey, error) {
 	return keyPair, err
 }
 
-// Offset returns 0-based index of the **next** running prkgation
+// Offset returns 0-based index of the **next** key
+// returned by this prkg
 func (prkg *KeyIterator) Offset() uint32 {
 	return prkg.offset
 }
