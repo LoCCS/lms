@@ -115,20 +115,6 @@ type MerkleSig struct {
 	Auth [][]byte
 }
 
-func (sig *MerkleSig) String() string {
-	ss := "{"
-	ss += fmt.Sprintf(" leaf: %v,\n", sig.Leaf)
-	ss += " LeafPk: {\n"
-	ss += fmt.Sprintf("  opts: %x,\n", sig.LeafPk.LMOpts.Serialize())
-	ss += fmt.Sprintf("  K: %x,\n", sig.LeafPk.K)
-	ss += " },\n"
-	ss += " Sig: "
-	ss += sig.LMSig.String()
-	ss += "\n}"
-
-	return ss
-}
-
 // Sign produces a Merkle signature
 func Sign(agent *MerkleAgent, hash []byte) (*lmots.PrivateKey, *MerkleSig, error) {
 	merkleSig := new(MerkleSig)
