@@ -18,7 +18,6 @@ func merge(r uint32, left, right []byte) []byte {
 	// node number
 	binary.BigEndian.PutUint32(buf[:], r)
 	sh.Write(buf[:])
-	//fmt.Printf("%v,", r)
 
 	// domain separation field
 	binary.BigEndian.PutUint16(buf[:2], lmots.D_INTR)
