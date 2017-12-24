@@ -12,13 +12,13 @@ import (
 // Node is a node in the Merkle tree
 type Node struct {
 	height uint32
-	//index  int
-	nu []byte
+	nu     []byte
+	index  uint32
 }
 
 // String generates the string representation of node
 func (node *Node) String() string {
-	return fmt.Sprintf("{height: %v}", node.height)
+	return fmt.Sprintf("{height: %v, index: %v}", node.height, node.index)
 }
 
 // TreeHashStack is a stack tracing the running state
@@ -81,7 +81,9 @@ func (th *TreeHashStack) Top() *Node {
 // Update executes numOp updates on the instance, and
 // add on the new leaf derived by keyItr if necessary
 func (th *TreeHashStack) Update(numOp uint32, nodeHouse [][]byte) {
-
+	//H := uint32(bits.Len32(uint32()) - 1)
+	numLeaf := uint32(len(nodeHouse))
+	//fmt.Println("H:", H)
 	for (numOp > 0) && !th.IsCompleted() {
 		// may have nodes at the same height to merge
 		if th.nodeStack.Len() >= 2 {
@@ -94,7 +96,17 @@ func (th *TreeHashStack) Update(numOp uint32, nodeHouse [][]byte) {
 				th.nodeStack.Pop()
 				th.nodeStack.Pop()
 
-				th.nodeStack.Push(&Node{node1.height + 1, merge(node2.nu, node1.nu)})
+				//*
+				th.nodeStack.Push(&Node{
+					height: node1.height + 1,
+					nu:     merge(node2.index/2, node2.nu, node1.nu),
+					index:  node2.index / 2,
+				})
+				//*/
+				//th.nodeStack.Push(mergeNode(node2, node1))
+
+				//fmt.Printf("h: %v, index: %v, nu: %x\n", node1.height+1,
+				//	node2.index/2, merge(node2.index/2, node2.nu, node1.nu))
 				numOp--
 				continue
 			}
@@ -102,10 +114,25 @@ func (th *TreeHashStack) Update(numOp uint32, nodeHouse [][]byte) {
 
 		// invoke key generator to make a new leaf and
 		//	add the new leaf to S
-		if th.leaf >= uint32(len(nodeHouse)) {
-			th.nodeStack.Push(&Node{0, nodeHouse[0]})
+		//if th.leaf >= uint32(len(nodeHouse)) {
+		if th.leaf >= numLeaf {
+			//th.nodeStack.Push(&Node{0, nodeHouse[0]})
+			// dummy node
+			th.nodeStack.Push(&Node{
+				height: 0,
+				nu:     nodeHouse[0],
+				index:  numLeaf,
+			})
+			//fmt.Println("wooo")
 		} else {
-			th.nodeStack.Push(&Node{0, nodeHouse[th.leaf]})
+			//th.nodeStack.Push(&Node{0, nodeHouse[th.leaf]})
+			th.nodeStack.Push(&Node{
+				height: 0,
+				nu:     nodeHouse[th.leaf],
+				index:  th.leaf + numLeaf,
+			})
+			//fmt.Printf("h: %v, index: %v, nu: %x, leaf: %v\n", 0,
+			//	th.leaf+(1<<H), nodeHouse[th.leaf], th.leaf)
 		}
 		th.leaf++
 		numOp--
@@ -119,8 +146,8 @@ func (th *TreeHashStack) Update(numOp uint32, nodeHouse [][]byte) {
 // elements are put from bottom to top
 func (th *TreeHashStack) Serialize() []byte {
 	stackSize := uint32(th.nodeStack.Len())
-	//elementSize := uint32(4 + config.Size)
-	elementSize := uint32(4 + lmots.N)
+	//elementSize := uint32(4 + lmots.N)
+	elementSize := uint32(4 + lmots.N + 4)
 	ret := make([]byte, 20+stackSize*elementSize)
 	binary.LittleEndian.PutUint32(ret[0:], stackSize)
 	binary.LittleEndian.PutUint32(ret[4:], elementSize)
@@ -136,6 +163,9 @@ func (th *TreeHashStack) Serialize() []byte {
 		copy(ret[offset:], vs[i].(*Node).nu)
 		//offset += config.Size
 		offset += lmots.N
+		// add by sammy
+		binary.LittleEndian.PutUint32(ret[offset:], vs[i].(*Node).index)
+		offset += 4
 	}
 
 	return ret
@@ -151,7 +181,8 @@ func RebuildTreeHashStack(stackBytes []byte) *TreeHashStack {
 
 	stackSize := binary.LittleEndian.Uint32(stackBytes[0:])
 	elementSize := binary.LittleEndian.Uint32(stackBytes[4:])
-	hashSize := int(elementSize) - 4
+	//hashSize := int(elementSize) - 4
+	hashSize := int(elementSize) - 4 - 4
 
 	offset := 20
 	th.nodeStack = stack.New()
@@ -160,9 +191,12 @@ func RebuildTreeHashStack(stackBytes []byte) *TreeHashStack {
 		offset += 4
 		nu := stackBytes[offset : offset+hashSize]
 		offset += hashSize
+		index := binary.LittleEndian.Uint32(stackBytes[offset : offset+4])
+		offset += 4
 		node := &Node{
 			height: height,
 			nu:     nu,
+			index:  index,
 		}
 		th.nodeStack.Push(node)
 	}

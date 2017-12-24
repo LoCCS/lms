@@ -46,7 +46,7 @@ func NewMerkleAgent(H uint32, seed []byte) (*MerkleAgent, error) {
 		//agent.nodeHouse[i] = HashPk(&sk.PublicKey)
 		agent.nodeHouse[i] = hashOTSPk(&sk.PublicKey, agent.H)
 	}
-	globalStack := NewTreeHashStack(0, H+1)
+	globalStack := NewTreeHashStack(0, H)
 	for h := uint32(0); h < H; h++ {
 		globalStack.Update(1, agent.nodeHouse)
 		agent.treeHashStacks[h] = NewTreeHashStack(0, h)
@@ -126,7 +126,6 @@ func Sign(agent *MerkleAgent, hash []byte) (*lmots.PrivateKey, *MerkleSig, error
 	}
 
 	sk, err := agent.keyItr.Next()
-	//sk00 = sk
 	if err != nil {
 		return nil, nil, err
 	}
@@ -136,14 +135,17 @@ func Sign(agent *MerkleAgent, hash []byte) (*lmots.PrivateKey, *MerkleSig, error
 	}
 
 	// fill in the public key deriving leaf
-	//merkleSig.LeafPk = &sk.PublicKey
 	merkleSig.LeafPk = (&sk.PublicKey).Clone()
 
+	//fmt.Println("Leaf:", merkleSig.Leaf+(1<<agent.H))
+	//fmt.Printf("LeafPk: %x\n", agent.nodeHouse[0])
 	// copy the auth path
 	merkleSig.Auth = make([][]byte, len(agent.auth))
 	for i := range agent.auth {
 		merkleSig.Auth[i] = make([]byte, len(agent.auth[i]))
 		copy(merkleSig.Auth[i], agent.auth[i])
+
+		//fmt.Printf("%v: %x\n", i, agent.auth[i])
 	}
 
 	// update auth path
@@ -161,29 +163,38 @@ func Sign(agent *MerkleAgent, hash []byte) (*lmots.PrivateKey, *MerkleSig, error
 func Verify(root []byte, hash []byte, merkleSig *MerkleSig) bool {
 	if (nil == merkleSig) || (!lmots.Verify(merkleSig.LeafPk, hash, merkleSig.LMSig)) {
 		//fmt.Println("merkleSig: \n", merkleSig)
-		fmt.Println("***ots failed")
+		//fmt.Println("***ots failed")
 		return false
 	}
+	//fmt.Printf("root: %x\n", root)
 
 	H := len(merkleSig.Auth)
 	// index of node in current height h
-	idx := merkleSig.Leaf
-	//hashFunc := config.HashFunc()
-	hashFunc := HashFunc()
+	// node number for siblings of Auth[h]
+	idx := merkleSig.Leaf + (1 << uint32(H))
+	//fmt.Println("Leaf: ", idx)
 
-	//parentHash := HashPk(merkleSig.LeafPk)
 	parentHash := hashOTSPk(merkleSig.LeafPk, uint32(H))
+	//fmt.Printf("LeafPk: %x\n", parentHash)
 	for h := 0; h < H; h++ {
-		hashFunc.Reset()
+		/*hashFunc.Reset()
 		if 1 == idx%2 { // idx is odd, i.e., a right node
 			hashFunc.Write(merkleSig.Auth[h])
 			hashFunc.Write(parentHash)
 		} else {
 			hashFunc.Write(parentHash)
 			hashFunc.Write(merkleSig.Auth[h])
-		}
+		}*/
 		// level up
-		parentHash = hashFunc.Sum(nil)
+		//parentHash = hashFunc.Sum(nil)
+		if 1 == idx%2 {
+			parentHash = merge(idx/2, merkleSig.Auth[h], parentHash)
+		} else {
+			parentHash = merge(idx/2, parentHash, merkleSig.Auth[h])
+		}
+		//fmt.Printf("%v: %x\n", h, merkleSig.Auth[h])
+		//fmt.Printf("%x\n", parentHash)
+
 		idx = idx >> 1
 	}
 

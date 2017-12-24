@@ -20,7 +20,7 @@ func BenchmarkLMSSetup(b *testing.B) {
 }
 
 func BenchmarkLMSStdOps(b *testing.B) {
-	const H = 16
+	const H = 3
 	seed := make([]byte, lmots.N)
 	rand.Reader.Read(seed)
 	merkleAgent, err := NewMerkleAgent(H, seed)
@@ -39,6 +39,7 @@ func BenchmarkLMSStdOps(b *testing.B) {
 		}
 
 		if !Verify(merkleAgent.Root(), msg, sig) {
+			b.Log(i)
 			b.Fatal("verification failed")
 		}
 	}

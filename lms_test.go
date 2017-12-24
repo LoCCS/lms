@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	H = 8 // the height of the merkle tree
+	H = 16 // the height of the merkle tree
 )
 
 func TestLMSApp(t *testing.T) {
@@ -67,7 +67,10 @@ func TestLMSApp(t *testing.T) {
 		//fmt.Println("Leaf: ", sig.Leaf)
 		//fmt.Println("sign ", time.Now())
 		verifyStart := time.Now()
+		//fmt.Println("\n", merkleAgent.GetLeaf()-1)
+		//fmt.Println("verifying")
 		result := Verify(merkleAgent.Root(), message, sig)
+		//fmt.Println()
 		verifyTime := time.Since(verifyStart)
 		verifySum += verifyTime
 		//fmt.Printf("Verify in %v\n", verifyTime)
@@ -79,6 +82,8 @@ func TestLMSApp(t *testing.T) {
 			success++
 		} else {
 			failure++
+			fmt.Println(i, "hello")
+			return
 		}
 
 	}
@@ -93,6 +98,7 @@ func TestLMSApp(t *testing.T) {
 }
 
 func TestLMSStdOps(t *testing.T) {
+	const H = 3
 	seed := make([]byte, lmots.N)
 	rand.Reader.Read(seed)
 	merkleAgent, err := NewMerkleAgent(H, seed)
