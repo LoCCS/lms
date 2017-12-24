@@ -2,7 +2,7 @@
 
 ![version tag](https://img.shields.io/badge/lms-v1.3-blue.svg) 
 ![build status](https://img.shields.io/badge/build-passing-brightgreen.svg)
-![![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)    
+[![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)    
 
 Copyright (c) 2017-2018 LoCCS.  
 Project to implement the Leighton-Micali signature scheme according to [Hash-Based Signatures: draft-mcgrew-hash-sigs-08](https://datatracker.ietf.org/doc/draft-mcgrew-hash-sigs).  
