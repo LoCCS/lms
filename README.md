@@ -1,6 +1,6 @@
 # The Leighton-Micali Signatures [LMS]  
 
-![version tag](https://img.shields.io/badge/lms-v1.3-blue.svg) 
+![version tag](https://img.shields.io/badge/lms-v1.4-blue.svg) 
 ![build status](https://img.shields.io/badge/build-passing-brightgreen.svg)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)    
 

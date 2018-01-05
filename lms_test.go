@@ -56,8 +56,17 @@ func TestLMSApp(t *testing.T) {
 				continue
 			}
 		}
-		sigBytes := sigraw.Serialize()
-		sig := DeserializeMerkleSig(sigBytes)
+		//sigBytes := sigraw.Serialize()
+		//sig := DeserializeMerkleSig(sigBytes)
+		sigData, err := sigraw.Serialize()
+		if nil != err {
+			t.Fatal(err)
+		}
+		sig := new(MerkleSig)
+		if err := sig.Deserialize(sigData); nil != err {
+			t.Fatal(err)
+		}
+
 		signSum += signTime
 		if signTime > maxsig {
 			maxsig = signTime
