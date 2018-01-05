@@ -3,13 +3,13 @@ package lms
 import (
 	"bytes"
 	"crypto/rand"
-	"encoding/gob"
 	mathrand "math/rand"
 	"testing"
 
 	"golang.org/x/crypto/sha3"
 
 	"github.com/LoCCS/lmots"
+	lmrand "github.com/LoCCS/lmots/rand"
 )
 
 func mockUpMerkleSig() (*MerkleSig, error) {
@@ -45,6 +45,25 @@ func mockUpMerkleSig() (*MerkleSig, error) {
 	return merkleSig, nil
 }
 
+func mockUpPRKG() (*KeyIterator, error) {
+	seed := make([]byte, lmots.N)
+	if _, err := rand.Read(seed); nil != err {
+		return nil, err
+	}
+
+	prkg := new(KeyIterator)
+	prkg.rng = lmrand.New(seed)
+	prkg.offset = mathrand.Uint32()
+	prkg.LMOpts = lmots.NewLMOpts()
+
+	if _, err := rand.Read(prkg.LMOpts.I[:]); nil != err {
+		return nil, err
+	}
+
+	return prkg, nil
+}
+
+/*
 func TestMerkleSigEncoding(t *testing.T) {
 	merkleSig, err := mockUpMerkleSig()
 	if nil != err {
@@ -63,7 +82,7 @@ func TestMerkleSigEncoding(t *testing.T) {
 	if err := dec.Decode(merkleSig2); nil != err {
 		t.Fatal(err)
 	}
-}
+}*/
 
 func TestMerkleSigSerialization(t *testing.T) {
 	merkleSig, err := mockUpMerkleSig()
@@ -103,4 +122,29 @@ func TestMerkleSigSerialization(t *testing.T) {
 
 	//t.Logf("%+v\n", merkleSig)
 	//t.Logf("%+v\n", merkleSig2)
+}
+
+func TestPRKGSerialization(t *testing.T) {
+	prkg, err := mockUpPRKG()
+	if nil != err {
+		t.Fatal(err)
+	}
+
+	data, err := prkg.Serialize()
+	if nil != err {
+		t.Fatal(err)
+	}
+
+	prkg2 := new(KeyIterator)
+	if err := prkg2.Deserialize(data); nil != err {
+		t.Fatal(err)
+	}
+
+	data2, err := prkg2.Serialize()
+	if nil != err {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(data, data2) {
+		t.Fatal("invalid bytes: want %x, got %x", data, data2)
+	}
 }

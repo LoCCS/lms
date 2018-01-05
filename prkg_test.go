@@ -2,38 +2,45 @@ package lms
 
 import (
 	"bytes"
+	"encoding/gob"
 	"testing"
 
 	"github.com/LoCCS/lmots"
 	"github.com/LoCCS/lmots/rand"
 )
 
-// TestKeyIteratorSerialize checks the serialization/deserialization
-// between KeyIterator and bytes slice
-func TestKeyIteratorSerialize(t *testing.T) {
+func TestKeyIteratorGobEncoding(t *testing.T) {
 	seed := make([]byte, lmots.N)
 	rand.Reader.Read(seed)
 
 	prkg := NewKeyIterator(seed)
 	prkg.Next()
 
-	compositeSeed := prkg.Serialize()
-
-	prkg2 := new(KeyIterator)
-	if !prkg2.Init(compositeSeed) {
-		t.Fatal("unexpected error during calling KeyIterator.Init()")
+	buf := new(bytes.Buffer)
+	if err := gob.NewEncoder(buf).Encode(prkg); nil != err {
+		t.Fatal(err)
 	}
 
-	compositeSeed2 := prkg2.Serialize()
-	if !bytes.Equal(compositeSeed, compositeSeed2) {
-		t.Fatalf("want %x, got %x", compositeSeed, compositeSeed2)
+	bs := buf.Bytes()
+
+	prkg2 := new(KeyIterator)
+	if err := gob.NewDecoder(buf).Decode(prkg2); nil != err {
+		t.Fatal(err)
+	}
+
+	buf2 := new(bytes.Buffer)
+	if err := gob.NewEncoder(buf2).Encode(prkg2); nil != err {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(bs, buf2.Bytes()) {
+		t.Fatalf("invalid gob: want %x, got %x", bs, buf2.Bytes())
 	}
 }
 
 // TestKeyIteratorExec tests correctness KeyIterator, including
 // normal running (demo by iter) and recovered running from
 // seed (demo by iter2)
-func TestKeyIteratorExec(t *testing.T) {
+func TestKeyIterator(t *testing.T) {
 	seed := make([]byte, lmots.N)
 	rand.Reader.Read(seed)
 
@@ -41,7 +48,15 @@ func TestKeyIteratorExec(t *testing.T) {
 	iter.Next()
 
 	iter2 := new(KeyIterator)
-	if !iter2.Init(iter.Serialize()) {
+	/*
+		if !iter2.Init(iter.Serialize()) {
+			t.Fatal("invalid integrated seed")
+		}*/
+	data, err := iter.Serialize()
+	if nil != err {
+		t.Fatal("unexpected error:", err)
+	}
+	if err := iter2.Deserialize(data); nil != err {
 		t.Fatal("invalid integrated seed")
 	}
 

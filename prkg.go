@@ -2,13 +2,13 @@ package lms
 
 import (
 	"bytes"
-	"encoding/binary"
+	"encoding/gob"
 
 	"github.com/LoCCS/lmots"
 	"github.com/LoCCS/lmots/rand"
 )
 
-// KeyIterator is a prkgator to produce a key chain for
+// KeyIterator is a prkg to produce a key chain for
 // user based on a seed
 type KeyIterator struct {
 	rng *rand.Rand
@@ -20,7 +20,7 @@ type KeyIterator struct {
 	*lmots.LMOpts
 }
 
-// NewKeyIterator makes a key pair prkgator
+// NewKeyIterator makes a prkg
 func NewKeyIterator(compactSeed []byte) *KeyIterator {
 	prkg := new(KeyIterator)
 
@@ -29,42 +29,6 @@ func NewKeyIterator(compactSeed []byte) *KeyIterator {
 	prkg.LMOpts = lmots.NewLMOpts()
 
 	return prkg
-}
-
-// Init initialises the prkg with the composite seed
-// exported by Serialize()
-func (prkg *KeyIterator) Init(compositeSeed []byte) bool {
-	buf := bytes.NewBuffer(compositeSeed)
-
-	var fieldLen uint8
-	// 1. len(seed)
-	if err := binary.Read(buf, binary.BigEndian,
-		&fieldLen); (nil != err) && (0 == fieldLen) {
-		return false
-	}
-	// 2. compactSeed
-	compactSeed := make([]byte, fieldLen)
-	if err := binary.Read(buf, binary.BigEndian,
-		compactSeed); nil != err {
-		return false
-	}
-	// initialise rng
-	prkg.rng = rand.New(compactSeed)
-
-	// 3. offset
-	var offset uint32
-	if err := binary.Read(buf, binary.BigEndian,
-		&offset); nil != err {
-		return false
-	}
-	// feed offset to LMOpts
-	prkg.offset = offset
-
-	// initialise LMOpts if needed before going on
-	if nil == prkg.LMOpts {
-		prkg.LMOpts = new(lmots.LMOpts)
-	}
-	return prkg.LMOpts.Deserialize(buf.Bytes())
 }
 
 // Next estimates and returns the next sk-pk pair
@@ -83,28 +47,37 @@ func (prkg *KeyIterator) Offset() uint32 {
 	return prkg.offset
 }
 
-// Serialize encodes the key iterator as
-// +---------------------------------------------+
-// |	len(seed)||seed||offset||len(nonce)||nonce	|
-// +---------------------------------------------+
-// the byte slice export from here makes up
-// everything needed to recovered the state the prkg
-// So unless it's your first-time use, you should
-// store this byte slice so as to snapshot the prkg
-func (prkg *KeyIterator) Serialize() []byte {
+type keyItrEx struct {
+	Seed   []byte
+	Offset uint32
+	Opts   *lmots.LMOpts
+}
+
+func (prkg KeyIterator) GobEncode() ([]byte, error) {
+	prkgEx := &keyItrEx{
+		Seed:   prkg.rng.Seed(),
+		Offset: prkg.offset,
+		Opts:   prkg.LMOpts,
+	}
+
 	buf := new(bytes.Buffer)
+	if err := gob.NewEncoder(buf).Encode(prkgEx); nil != err {
+		return nil, err
+	}
 
-	seed := prkg.rng.Seed()
-	// len(seed)
-	binary.Write(buf, binary.BigEndian, uint8(len(seed)))
-	// seed
-	binary.Write(buf, binary.BigEndian, seed)
+	return buf.Bytes(), nil
+}
 
-	// offset
-	binary.Write(buf, binary.BigEndian, prkg.offset)
+func (prkg *KeyIterator) GobDecode(data []byte) error {
+	prkgEx := new(keyItrEx)
+	buf := bytes.NewBuffer(data)
+	if err := gob.NewDecoder(buf).Decode(prkgEx); nil != err {
+		return err
+	}
 
-	// LMOpts
-	binary.Write(buf, binary.BigEndian, prkg.LMOpts.Serialize())
+	prkg.rng = rand.New(prkgEx.Seed)
+	prkg.offset = prkgEx.Offset
+	prkg.LMOpts = prkgEx.Opts
 
-	return buf.Bytes()
+	return nil
 }

@@ -35,7 +35,10 @@ func NewMerkleAgent(H uint32, seed []byte) (*MerkleAgent, error) {
 	agent.nodeHouse = make([][]byte, 1<<H)
 	agent.treeHashStacks = make([]*TreeHashStack, H)
 	agent.keyItr = NewKeyIterator(seed)
-	export := agent.keyItr.Serialize()
+	export, err := agent.keyItr.Serialize()
+	if nil != err {
+		return nil, err
+	}
 
 	for i := 0; i < (1 << H); i++ {
 		sk, err := agent.keyItr.Next()
@@ -61,7 +64,11 @@ func NewMerkleAgent(H uint32, seed []byte) (*MerkleAgent, error) {
 	globalStack.Update(1, agent.nodeHouse)
 	agent.root = make([]byte, len(globalStack.Top().nu))
 	copy(agent.root, globalStack.Top().nu)
-	agent.keyItr.Init(export)
+
+	//agent.keyItr.Init(export)
+	if err := agent.keyItr.Deserialize(export); nil != err {
+		return nil, err
+	}
 	return agent, nil
 }
 
@@ -231,7 +238,8 @@ func (agent *MerkleAgent) Serialize() []byte {
 
 // SerializeSecret encodes all the secret data which shall be encrypted
 func (agent *MerkleAgent) SerializeSecretKey() []byte {
-	return agent.keyItr.Serialize()
+	secretData, _ := agent.keyItr.Serialize()
+	return secretData
 }
 
 // RebuildMerkleAgent restores the merkle agent from serialized bytes
@@ -240,7 +248,11 @@ func RebuildMerkleAgent(plain []byte, secret []byte) *MerkleAgent {
 	agent := &MerkleAgent{}
 	seed := make([]byte, lmots.N)
 	agent.keyItr = NewKeyIterator(seed)
-	agent.keyItr.Init(secret)
+	//agent.keyItr.Init(secret)
+	if err := agent.keyItr.Deserialize(secret); nil != err {
+		return nil
+	}
+
 	agent.H = binary.LittleEndian.Uint32(plain[0:4])
 	hashSize := binary.LittleEndian.Uint32(plain[4:8])
 	root := plain[8 : 8+hashSize]
