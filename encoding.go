@@ -39,3 +39,17 @@ func (sig *MerkleSig) Deserialize(data []byte) error {
 
 	return dec.Decode(sig)
 }
+
+func (ths *TreeHashStack) Serialize() ([]byte, error) {
+	buf := new(bytes.Buffer)
+
+	if err := gob.NewEncoder(buf).Encode(ths); nil != err {
+		return nil, err
+	}
+
+	return buf.Bytes(), nil
+}
+
+func (ths *TreeHashStack) Deserialize(data []byte) error {
+	return gob.NewDecoder(bytes.NewBuffer(data)).Decode(ths)
+}

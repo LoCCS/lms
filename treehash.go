@@ -144,7 +144,7 @@ func (th *TreeHashStack) Update(numOp uint32, nodeHouse [][]byte) {
 // |	stackLen||elementSize||element||element||...||element| |
 // +---------------------------------------------------------+
 // elements are put from bottom to top
-func (th *TreeHashStack) Serialize() []byte {
+func (th *TreeHashStack) SerializeOld() []byte {
 	stackSize := uint32(th.nodeStack.Len())
 	//elementSize := uint32(4 + lmots.N)
 	elementSize := uint32(4 + lmots.N + 4)

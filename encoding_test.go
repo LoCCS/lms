@@ -10,6 +10,7 @@ import (
 
 	"github.com/LoCCS/lmots"
 	lmrand "github.com/LoCCS/lmots/rand"
+	"github.com/LoCCS/lms/container/stack"
 )
 
 func mockUpMerkleSig() (*MerkleSig, error) {
@@ -63,26 +64,30 @@ func mockUpPRKG() (*KeyIterator, error) {
 	return prkg, nil
 }
 
-/*
-func TestMerkleSigEncoding(t *testing.T) {
-	merkleSig, err := mockUpMerkleSig()
-	if nil != err {
-		t.Fatal(err)
-	}
-	// marshall the sig into a byte sequence
-	buf := new(bytes.Buffer)
-	enc := gob.NewEncoder(buf)
-	if err := enc.Encode(&merkleSig); nil != err {
-		t.Fatal(err)
+func mockUpTreeHashStack() (*TreeHashStack, error) {
+	ths := new(TreeHashStack)
+
+	ths.leaf = mathrand.Uint32() % 1024
+	ths.leafUpper = ths.leaf + 256
+	ths.height = mathrand.Uint32()%20 + 1
+
+	ths.nodeStack = stack.New()
+	ell := mathrand.Uint32() % 32
+	for i := uint32(0); i < ell; i++ {
+		node := &Node{
+			height: mathrand.Uint32(),
+			nu:     make([]byte, lmots.N),
+			index:  mathrand.Uint32(),
+		}
+		if _, err := rand.Read(node.nu); nil != err {
+			return nil, err
+		}
+
+		ths.nodeStack.Push(node)
 	}
 
-	// unmarshall the byte sequence into a sig
-	dec := gob.NewDecoder(buf)
-	merkleSig2 := new(MerkleSig)
-	if err := dec.Decode(merkleSig2); nil != err {
-		t.Fatal(err)
-	}
-}*/
+	return ths, nil
+}
 
 func TestMerkleSigSerialization(t *testing.T) {
 	merkleSig, err := mockUpMerkleSig()
@@ -145,6 +150,28 @@ func TestPRKGSerialization(t *testing.T) {
 		t.Fatal(err)
 	}
 	if !bytes.Equal(data, data2) {
-		t.Fatal("invalid bytes: want %x, got %x", data, data2)
+		t.Fatalf("invalid bytes: want %x, got %x", data, data2)
+	}
+}
+
+func TestTreeHashStackSerialization(t *testing.T) {
+	ths, err := mockUpTreeHashStack()
+	if nil != err {
+		t.Fatal(err)
+	}
+
+	data, err := ths.Serialize()
+	if nil != err {
+		t.Fatal(err)
+	}
+
+	ths2 := new(TreeHashStack)
+	if err := ths2.Deserialize(data); nil != err {
+		t.Fatal(err)
+	}
+
+	data2, err := ths2.Serialize()
+	if !bytes.Equal(data, data2) {
+		t.Fatalf("invalid gob: want %x, got %x", data, data2)
 	}
 }

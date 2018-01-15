@@ -37,9 +37,10 @@ func TestLMSApp(t *testing.T) {
 
 		if i%1837 == 0 {
 			fmt.Printf("Success %v, failure %v\n", success, failure)
-			mBytes := merkleAgent.Serialize()
+			mBytes, _ := merkleAgent.Serialize()
 			sBytes := merkleAgent.SerializeSecretKey()
-			merkleAgent = RebuildMerkleAgent(mBytes, sBytes)
+			//merkleAgent = RebuildMerkleAgent(mBytes, sBytes)
+			merkleAgent.RebuildMerkleAgent(mBytes, sBytes)
 		}
 
 		//	message, err := rand.RandSeed()
