@@ -79,7 +79,7 @@ func TestLMSApp(t *testing.T) {
 		verifyStart := time.Now()
 		//fmt.Println("\n", merkleAgent.GetLeaf()-1)
 		//fmt.Println("verifying")
-		result := Verify(merkleAgent.Root(), message, sig)
+		result := Verify(merkleAgent.Root, message, sig)
 		//fmt.Println()
 		verifyTime := time.Since(verifyStart)
 		verifySum += verifyTime
@@ -125,7 +125,7 @@ func TestLMSStdOps(t *testing.T) {
 		t.Fatalf("error in signing %x", msg)
 	}
 
-	if !Verify(merkleAgent.Root(), msg, sig) {
+	if !Verify(merkleAgent.Root, msg, sig) {
 		t.Fatal("verification failed")
 	}
 }

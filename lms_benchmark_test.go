@@ -38,7 +38,7 @@ func BenchmarkLMSStdOps(b *testing.B) {
 			b.Fatalf("error in signing %x", msg)
 		}
 
-		if !Verify(merkleAgent.Root(), msg, sig) {
+		if !Verify(merkleAgent.Root, msg, sig) {
 			b.Log(i)
 			b.Fatal("verification failed")
 		}
