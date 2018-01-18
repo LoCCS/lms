@@ -38,11 +38,11 @@ func hashOTSPk(pk *lmots.PublicKey, H uint32) []byte {
 	sh := HashFunc()
 
 	// key pair ID
-	sh.Write(pk.I[:])
+	sh.Write(pk.Opts.I[:])
 
 	var buf [4]byte
 	// node number
-	nodeIdx := pk.KeyIdx() + (1 << H)
+	nodeIdx := pk.Opts.KeyIdx + (1 << H)
 	binary.BigEndian.PutUint32(buf[:], nodeIdx)
 	sh.Write(buf[:])
 
@@ -51,10 +51,11 @@ func hashOTSPk(pk *lmots.PublicKey, H uint32) []byte {
 	sh.Write(buf[:2])
 
 	// ots-pk
-	pktype := pk.Type()
-	sh.Write(pktype[:])
-	sh.Write(pk.I[:])
-	binary.BigEndian.PutUint32(buf[:], pk.KeyIdx())
+	//pktype := pk.Type()
+	//sh.Write(pktype[:])
+	sh.Write(pk.Opts.Typecode[:])
+	sh.Write(pk.Opts.I[:])
+	binary.BigEndian.PutUint32(buf[:], pk.Opts.KeyIdx)
 	sh.Write(buf[:])
 	sh.Write(pk.K)
 
