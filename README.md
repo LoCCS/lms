@@ -21,8 +21,15 @@ are required to compile the library.
 
 <a name="installation"></a>
 ## Installation  
+### By `go get`  
 ```bash
 $ go get -u github.com/LoCCS/lms
+```
+### By [dep](https://github.com/golang/dep)  
+1. download the source code into local disks  
+2. invoke dep to build up dependencies  
+```
+$ dep ensure
 ```
 
 <a name="usage"></a>
