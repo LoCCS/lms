@@ -89,6 +89,33 @@ func mockUpTreeHashStack() (*TreeHashStack, error) {
 	return ths, nil
 }
 
+func isLMSigEqual(a, b *lmots.Sig) bool {
+	if a == b {
+		return true
+	}
+
+	if (nil == a) || (nil == b) {
+		return false
+	}
+
+	if !bytes.Equal(a.Typecode[:], b.Typecode[:]) ||
+		!bytes.Equal(a.C, b.C) {
+		return false
+	}
+
+	if len(a.Sigma) != len(b.Sigma) {
+		return false
+	}
+
+	for i := range a.Sigma {
+		if !bytes.Equal(a.Sigma[i], b.Sigma[i]) {
+			return false
+		}
+	}
+
+	return true
+}
+
 func TestMerkleSigSerialization(t *testing.T) {
 	merkleSig, err := mockUpMerkleSig()
 	if nil != err {
@@ -108,10 +135,10 @@ func TestMerkleSigSerialization(t *testing.T) {
 	if merkleSig.Leaf != merkleSig2.Leaf {
 		t.Fatalf("invalid Leaf: want %v, got %v", merkleSig.Leaf, merkleSig2.Leaf)
 	}
-	if !merkleSig.LeafPk.Equal(merkleSig.LeafPk) {
+	if !merkleSig.LeafPk.Equal(merkleSig2.LeafPk) {
 		t.Fatal("invalid OTS pubkey")
 	}
-	if !merkleSig.LMSig.Equal(merkleSig.LMSig) {
+	if !isLMSigEqual(merkleSig.LMSig, merkleSig2.LMSig) {
 		t.Fatal("invalid OTS signature")
 	}
 	if len(merkleSig.Auth) != len(merkleSig2.Auth) {

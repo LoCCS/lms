@@ -1,6 +1,6 @@
 # The Leighton-Micali Signatures [LMS]  
 
-![version tag](https://img.shields.io/badge/lms-v1.5-blue.svg) 
+![version tag](https://img.shields.io/badge/lms-v2.0-blue.svg) 
 ![build status](https://img.shields.io/badge/build-passing-brightgreen.svg)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)    
 
@@ -34,6 +34,7 @@ $ dep ensure
 
 <a name="usage"></a>
 ## Usage  
+Please refer to `ExampleVerify()` in [example_test.go](example_test.go)  
 
 <a name="contrib"></a>
 ## Contributing  
