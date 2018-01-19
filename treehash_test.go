@@ -29,11 +29,11 @@ func TestTreeHashIndexing(t *testing.T) {
 		ths.Update(1, nodeCache)
 		node := ths.Top()
 
-		if hVec[i] != node.height {
-			t.Fatalf("invalid height: want %v, got %v", hVec[i], node.height)
+		if hVec[i] != node.Height {
+			t.Fatalf("invalid height: want %v, got %v", hVec[i], node.Height)
 		}
-		if idxVec[i] != node.index {
-			t.Fatalf("invalid index: want %v, got %v", idxVec[i], node.index)
+		if idxVec[i] != node.Index {
+			t.Fatalf("invalid index: want %v, got %v", idxVec[i], node.Index)
 		}
 		i++
 	}

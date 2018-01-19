@@ -53,13 +53,13 @@ func NewMerkleAgent(H uint32, seed []byte) (*MerkleAgent, error) {
 		agent.treeHashStacks[h].SetLeaf(1 << h)
 
 		globalStack.Update((1<<(h+1))-1, agent.nodeHouse)
-		agent.auth[h] = make([]byte, len(globalStack.Top().nu))
-		copy(agent.auth[h], globalStack.Top().nu)
+		agent.auth[h] = make([]byte, len(globalStack.Top().Nu))
+		copy(agent.auth[h], globalStack.Top().Nu)
 	}
 
 	globalStack.Update(1, agent.nodeHouse)
-	agent.Root = make([]byte, len(globalStack.Top().nu))
-	copy(agent.Root, globalStack.Top().nu)
+	agent.Root = make([]byte, len(globalStack.Top().Nu))
+	copy(agent.Root, globalStack.Top().Nu)
 
 	//agent.keyItr.Init(export)
 	if err := agent.keyItr.Deserialize(export); nil != err {
@@ -76,7 +76,7 @@ func (agent *MerkleAgent) refreshAuth() {
 		pow2Toh := uint32(1 << h)
 		// nextLeaf % 2^h == 0
 		if 0 == nextLeaf&(pow2Toh-1) {
-			copy(agent.auth[h], agent.treeHashStacks[h].Top().nu)
+			copy(agent.auth[h], agent.treeHashStacks[h].Top().Nu)
 			startingLeaf := (nextLeaf + pow2Toh) ^ pow2Toh
 			agent.treeHashStacks[h].Init(startingLeaf, h)
 

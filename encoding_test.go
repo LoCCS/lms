@@ -75,11 +75,11 @@ func mockUpTreeHashStack() (*TreeHashStack, error) {
 	ell := mathrand.Uint32() % 32
 	for i := uint32(0); i < ell; i++ {
 		node := &Node{
-			height: mathrand.Uint32(),
-			nu:     make([]byte, lmots.N),
-			index:  mathrand.Uint32(),
+			Height: mathrand.Uint32(),
+			Nu:     make([]byte, lmots.N),
+			Index:  mathrand.Uint32(),
 		}
-		if _, err := rand.Read(node.nu); nil != err {
+		if _, err := rand.Read(node.Nu); nil != err {
 			return nil, err
 		}
 
@@ -106,7 +106,7 @@ func TestMerkleSigSerialization(t *testing.T) {
 	}
 
 	if merkleSig.Leaf != merkleSig2.Leaf {
-		t.Fatalf("invalid Leaf: want %v, got %v", merkleSig.Leaf != merkleSig2.Leaf)
+		t.Fatalf("invalid Leaf: want %v, got %v", merkleSig.Leaf, merkleSig2.Leaf)
 	}
 	if !merkleSig.LeafPk.Equal(merkleSig.LeafPk) {
 		t.Fatal("invalid OTS pubkey")

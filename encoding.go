@@ -40,6 +40,7 @@ func (sig *MerkleSig) Deserialize(data []byte) error {
 	return dec.Decode(sig)
 }
 
+// Serialize marshals the TreeHashStack as Gob bytes
 func (ths *TreeHashStack) Serialize() ([]byte, error) {
 	buf := new(bytes.Buffer)
 
@@ -50,6 +51,7 @@ func (ths *TreeHashStack) Serialize() ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
+// Deserialize unmarshals the TreeHashStack from the Gob bytes
 func (ths *TreeHashStack) Deserialize(data []byte) error {
 	return gob.NewDecoder(bytes.NewBuffer(data)).Decode(ths)
 }

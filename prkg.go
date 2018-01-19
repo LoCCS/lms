@@ -54,6 +54,7 @@ type keyItrEx struct {
 	Opts   *lmots.LMOpts
 }
 
+// GobEncode customizes the Gob encoding scheme for KeyIterator
 func (prkg KeyIterator) GobEncode() ([]byte, error) {
 	prkgEx := &keyItrEx{
 		Seed:   prkg.rng.Seed(),
@@ -69,6 +70,7 @@ func (prkg KeyIterator) GobEncode() ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
+// GobDecode customizes the Gob decoding scheme for KeyIterator
 func (prkg *KeyIterator) GobDecode(data []byte) error {
 	prkgEx := new(keyItrEx)
 	buf := bytes.NewBuffer(data)

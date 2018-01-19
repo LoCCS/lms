@@ -7,41 +7,6 @@ import (
 	"github.com/LoCCS/lms/container/stack"
 )
 
-type nodeEx struct {
-	Height uint32
-	Nu     []byte
-	Index  uint32
-}
-
-func (node Node) GobEncode() ([]byte, error) {
-	nodeGob := &nodeEx{
-		Height: node.height,
-		Nu:     node.nu,
-		Index:  node.index,
-	}
-
-	buf := new(bytes.Buffer)
-	if err := gob.NewEncoder(buf).Encode(nodeGob); nil != err {
-		return nil, err
-	}
-
-	return buf.Bytes(), nil
-}
-
-func (node *Node) GobDecode(data []byte) error {
-	nodeGob := new(nodeEx)
-
-	if err := gob.NewDecoder(bytes.NewBuffer(data)).Decode(nodeGob); nil != err {
-		return err
-	}
-
-	node.height = nodeGob.Height
-	node.nu = nodeGob.Nu
-	node.index = nodeGob.Index
-
-	return nil
-}
-
 // thsEx is the exporting template of TreeHashStack
 type thsEx struct {
 	Leaf      uint32
@@ -50,6 +15,7 @@ type thsEx struct {
 	NodeStack []*Node
 }
 
+// GobEncode customizes the Gob encoding scheme for TreeHashStack
 func (ths TreeHashStack) GobEncode() ([]byte, error) {
 	thsGob := &thsEx{
 		Leaf:      ths.leaf,
@@ -71,6 +37,7 @@ func (ths TreeHashStack) GobEncode() ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
+// GobDecode customizes the Gob decoding scheme for TreeHashStack
 func (ths *TreeHashStack) GobDecode(data []byte) error {
 	thsGob := new(thsEx)
 
@@ -84,7 +51,7 @@ func (ths *TreeHashStack) GobDecode(data []byte) error {
 	ths.nodeStack = stack.New()
 
 	for _, n := range thsGob.NodeStack {
-		ths.nodeStack.Push(&Node{height: n.height, nu: n.nu, index: n.index})
+		ths.nodeStack.Push(&Node{Height: n.Height, Nu: n.Nu, Index: n.Index})
 	}
 
 	return nil

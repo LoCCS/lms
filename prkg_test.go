@@ -48,10 +48,6 @@ func TestKeyIterator(t *testing.T) {
 	iter.Next()
 
 	iter2 := new(KeyIterator)
-	/*
-		if !iter2.Init(iter.Serialize()) {
-			t.Fatal("invalid integrated seed")
-		}*/
 	data, err := iter.Serialize()
 	if nil != err {
 		t.Fatal("unexpected error:", err)
