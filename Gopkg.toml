@@ -22,8 +22,8 @@
 
 [[constraint]]
   name = "github.com/LoCCS/lmots"
-#  revision = "5b209ab86d970e9a841526b022be26ac4b578378"
-  version = "2.0"
+#  revision = "6faeea4d81a57ce79d84ea1a344324c14f6319b8" 
+  version = "2.1.0"
 
 [[constraint]]
   branch = "master"

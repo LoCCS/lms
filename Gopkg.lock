@@ -8,8 +8,8 @@
     "hash",
     "rand"
   ]
-  revision = "34e02aeb19a6e228d891d684b44add9b7932f950"
-  version = "v2.0"
+  revision = "6faeea4d81a57ce79d84ea1a344324c14f6319b8"
+  version = "v2.1.0"
 
 [[projects]]
   branch = "master"
@@ -20,6 +20,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "56b881428640249bcaf91320496aa3be95446909961485f2146e447b2d5c665a"
+  inputs-digest = "cb01e1a7bb90ee2429a44c517d1a95d613190be0f79a105565de813d16bc3927"
   solver-name = "gps-cdcl"
   solver-version = 1
