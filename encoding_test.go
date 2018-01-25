@@ -30,7 +30,6 @@ func mockUpMerkleSig() (*MerkleSig, error) {
 
 	const H = 16
 	merkleSig := &MerkleSig{
-		Leaf:  mathrand.Uint32(),
 		Opts:  sk.PublicKey.Opts,
 		LMSig: sig,
 	}
@@ -132,9 +131,6 @@ func TestMerkleSigSerialization(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if merkleSig.Leaf != merkleSig2.Leaf {
-		t.Fatalf("invalid Leaf: want %v, got %v", merkleSig.Leaf, merkleSig2.Leaf)
-	}
 	if !merkleSig.Opts.Equal(merkleSig2.Opts) {
 		t.Fatal("invalid OTS options")
 	}

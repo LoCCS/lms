@@ -11,9 +11,8 @@ import (
 // MerkleSig is the container for the signature generated
 // according to LMS
 type MerkleSig struct {
-	Leaf  uint32
 	Opts  *lmots.LMOpts
-	LMSig *lmots.Sig
+	LMSig *lmots.Sig // OTS signature
 
 	Auth [][]byte
 }
@@ -21,7 +20,6 @@ type MerkleSig struct {
 // Sign produces a Merkle signature
 func Sign(agent *MerkleAgent, hash []byte) (*lmots.PrivateKey, *MerkleSig, error) {
 	merkleSig := new(MerkleSig)
-	merkleSig.Leaf = agent.keyItr.Offset()
 
 	offset := agent.keyItr.Offset()
 	if offset >= (1 << agent.H) {
@@ -38,7 +36,6 @@ func Sign(agent *MerkleAgent, hash []byte) (*lmots.PrivateKey, *MerkleSig, error
 	}
 
 	// fill in the public key deriving leaf
-	//merkleSig.LeafPk = (&sk.PublicKey).Clone()
 	merkleSig.Opts = sk.PublicKey.Opts.Clone()
 
 	// copy the auth path
@@ -75,7 +72,7 @@ func Verify(root []byte, hash []byte, merkleSig *MerkleSig) bool {
 	H := len(merkleSig.Auth)
 	// index of node in current height h
 	// node number for siblings of Auth[h]
-	idx := merkleSig.Leaf + (1 << uint32(H))
+	idx := merkleSig.Opts.KeyIdx + (1 << uint32(H))
 
 	parentHash := hashOTSPk(leafPk, uint32(H))
 	for h := 0; h < H; h++ {

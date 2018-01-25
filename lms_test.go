@@ -39,7 +39,6 @@ func TestLMSApp(t *testing.T) {
 			fmt.Printf("Success %v, failure %v\n", success, failure)
 			mBytes, _ := merkleAgent.Serialize()
 			sBytes := merkleAgent.SerializeSecretKey()
-			//merkleAgent = RebuildMerkleAgent(mBytes, sBytes)
 			merkleAgent.RebuildMerkleAgent(mBytes, sBytes)
 		}
 

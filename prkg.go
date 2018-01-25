@@ -33,7 +33,6 @@ func NewKeyIterator(compactSeed []byte) *KeyIterator {
 
 // Next estimates and returns the next sk-pk pair
 func (prkg *KeyIterator) Next() (*lmots.PrivateKey, error) {
-	//prkg.LMOpts.SetKeyIdx(prkg.offset)
 	prkg.LMOpts.KeyIdx = prkg.offset
 	keyPair, err := lmots.GenerateKey(prkg.LMOpts, prkg.rng)
 
