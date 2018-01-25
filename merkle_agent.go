@@ -41,7 +41,6 @@ func NewMerkleAgent(H uint32, seed []byte) (*MerkleAgent, error) {
 		if err != nil {
 			return nil, err
 		}
-		//agent.nodeHouse[i] = HashPk(&sk.PublicKey)
 		agent.nodeHouse[i] = hashOTSPk(&sk.PublicKey, agent.H)
 	}
 	globalStack := NewTreeHashStack(0, H)
@@ -124,7 +123,6 @@ type merkleAgentEx struct {
 	Root           []byte
 	NodeHouse      [][]byte
 	TreeHashStacks []*TreeHashStack
-	//KeyItr         *KeyIterator
 }
 
 // GobEncode customizes the Gob encoding for MerkleAgent

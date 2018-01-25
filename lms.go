@@ -71,7 +71,6 @@ func Verify(root []byte, hash []byte, merkleSig *MerkleSig) bool {
 
 	H := len(merkleSig.Auth)
 	// index of node in current height h
-	// node number for siblings of Auth[h]
 	idx := merkleSig.Opts.KeyIdx + (1 << uint32(H))
 
 	parentHash := hashOTSPk(leafPk, uint32(H))
