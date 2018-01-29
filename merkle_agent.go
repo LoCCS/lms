@@ -60,7 +60,6 @@ func NewMerkleAgent(H uint32, seed []byte) (*MerkleAgent, error) {
 	agent.Root = make([]byte, len(globalStack.Top().Nu))
 	copy(agent.Root, globalStack.Top().Nu)
 
-	//agent.keyItr.Init(export)
 	if err := agent.keyItr.Deserialize(export); nil != err {
 		return nil, err
 	}
@@ -69,11 +68,9 @@ func NewMerkleAgent(H uint32, seed []byte) (*MerkleAgent, error) {
 
 // refreshAuth updates auth path for next use
 func (agent *MerkleAgent) refreshAuth() {
-	//nextLeaf := agent.NumLeafUsed + 1
 	nextLeaf := agent.keyItr.Offset()
 	for h := uint32(0); h < agent.H; h++ {
 		pow2Toh := uint32(1 << h)
-		// nextLeaf % 2^h == 0
 		if 0 == nextLeaf&(pow2Toh-1) {
 			copy(agent.auth[h], agent.treeHashStacks[h].Top().Nu)
 			startingLeaf := (nextLeaf + pow2Toh) ^ pow2Toh
@@ -96,7 +93,6 @@ func (agent *MerkleAgent) refreshTreeHashStacks() {
 				focus = h
 			}
 		}
-		//agent.treeHashStacks[focus].Update(1, agent.nodeHouse)
 		agent.treeHashStacks[focus].Update(agent.keyItr.LMOpts.I[:], 1, agent.nodeHouse)
 	}
 }
@@ -134,7 +130,6 @@ func (agent *MerkleAgent) GobEncode() ([]byte, error) {
 		Root:           agent.Root,
 		NodeHouse:      agent.nodeHouse,
 		TreeHashStacks: agent.treeHashStacks,
-		//KeyItr:         agent.keyItr,
 	}
 
 	buf := new(bytes.Buffer)
@@ -173,9 +168,9 @@ func (agent *MerkleAgent) Serialize() ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-// RebuildMerkleAgent restores the merkle agent from serialized bytes
+// Rebuild restores the merkle agent from serialized bytes
 // and secret bytes
-func (agent *MerkleAgent) RebuildMerkleAgent(data []byte, secret []byte) error {
+func (agent *MerkleAgent) Rebuild(data []byte, secret []byte) error {
 	if err := gob.NewDecoder(bytes.NewBuffer(data)).Decode(agent); nil != err {
 		return err
 	}

@@ -73,7 +73,6 @@ func (th *TreeHashStack) Top() *Node {
 
 // Update executes numOp updates on the instance, and
 // add on the new leaf derived by keyItr if necessary
-//func (th *TreeHashStack) Update(numOp uint32, nodeHouse [][]byte) {
 func (th *TreeHashStack) Update(I []byte, numOp uint32, nodeHouse [][]byte) {
 	//H := uint32(bits.Len32(uint32()) - 1)
 	numLeaf := uint32(len(nodeHouse))

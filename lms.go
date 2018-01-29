@@ -77,10 +77,8 @@ func Verify(root []byte, hash []byte, merkleSig *MerkleSig) bool {
 	for h := 0; h < H; h++ {
 		// level up
 		if 1 == idx%2 {
-			//parentHash = merge(idx/2, merkleSig.Auth[h], parentHash)
 			parentHash = merge(leafPk.Opts.I[:], idx/2, merkleSig.Auth[h], parentHash)
 		} else {
-			//parentHash = merge(idx/2, parentHash, merkleSig.Auth[h])
 			parentHash = merge(leafPk.Opts.I[:], idx/2, parentHash, merkleSig.Auth[h])
 		}
 

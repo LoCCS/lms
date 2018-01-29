@@ -7,7 +7,6 @@ import (
 )
 
 // merge estimates the hash for `I|r|D_INTR|left|right`
-//func merge(r uint32, left, right []byte) []byte {
 func merge(I []byte, r uint32, left, right []byte) []byte {
 	sh := HashFunc()
 

@@ -45,7 +45,7 @@ func TestMerkleAgent(t *testing.T) {
 	prkgData := merkleAgent.SerializeSecretKey()
 
 	merkleAgent2 := new(MerkleAgent)
-	if err := merkleAgent2.RebuildMerkleAgent(maData, prkgData); nil != err {
+	if err := merkleAgent2.Rebuild(maData, prkgData); nil != err {
 		t.Fatal(err)
 	}
 
