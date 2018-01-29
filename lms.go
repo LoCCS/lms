@@ -21,8 +21,7 @@ type MerkleSig struct {
 func Sign(agent *MerkleAgent, hash []byte) (*lmots.PrivateKey, *MerkleSig, error) {
 	merkleSig := new(MerkleSig)
 
-	offset := agent.keyItr.Offset()
-	if offset >= (1 << agent.H) {
+	if agent.Exhausted() {
 		return nil, nil, errors.New("key pairs on the tree are totally used")
 	}
 
@@ -30,6 +29,7 @@ func Sign(agent *MerkleAgent, hash []byte) (*lmots.PrivateKey, *MerkleSig, error
 	if err != nil {
 		return nil, nil, err
 	}
+
 	merkleSig.LMSig, err = lmots.Sign(rand.Reader, sk, hash)
 	if nil != err {
 		return nil, nil, errors.New("unexpected error occurs during signing")
@@ -47,13 +47,14 @@ func Sign(agent *MerkleAgent, hash []byte) (*lmots.PrivateKey, *MerkleSig, error
 
 	// update auth path
 	agent.Traverse()
-	offset = agent.keyItr.Offset()
-	err = nil
-	if offset == (1<<agent.H)-1 {
-		err = errors.New("Warning: this is the last signature")
-	}
+	/*
+		err = nil
+		if agent.Exhausted() {
+			err = errors.New("Warning: this is the last signature")
+		}*/
 
-	return sk, merkleSig, err
+	//return sk, merkleSig, err
+	return sk, merkleSig, nil
 }
 
 // Verify verifies a Merkle signature

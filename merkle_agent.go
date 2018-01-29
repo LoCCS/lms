@@ -178,3 +178,8 @@ func (agent *MerkleAgent) Rebuild(data []byte, secret []byte) error {
 	agent.keyItr = new(KeyIterator)
 	return agent.keyItr.Deserialize(secret)
 }
+
+// Exhausted checks if the agent can give us more keys to use
+func (agent *MerkleAgent) Exhausted() bool {
+	return (agent.keyItr.Offset() >> agent.H) > 0
+}

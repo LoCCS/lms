@@ -41,7 +41,6 @@ func TestLMSApp(t *testing.T) {
 			merkleAgent.Rebuild(mBytes, sBytes)
 		}
 
-		//	message, err := rand.RandSeed()
 		message := make([]byte, lmots.N)
 		rand.Reader.Read(message)
 		signStart := time.Now()
@@ -55,8 +54,7 @@ func TestLMSApp(t *testing.T) {
 				continue
 			}
 		}
-		//sigBytes := sigraw.Serialize()
-		//sig := DeserializeMerkleSig(sigBytes)
+
 		sigData, err := sigraw.Serialize()
 		if nil != err {
 			t.Fatal(err)
@@ -71,17 +69,14 @@ func TestLMSApp(t *testing.T) {
 			maxsig = signTime
 			fmt.Printf("Currently max sig time: %v\n", maxsig)
 		}
-		//fmt.Printf("Sign in %v\n", signTime)
-		//fmt.Println("Leaf: ", sig.Leaf)
-		//fmt.Println("sign ", time.Now())
+
 		verifyStart := time.Now()
-		//fmt.Println("\n", merkleAgent.GetLeaf()-1)
-		//fmt.Println("verifying")
+
 		result := Verify(merkleAgent.Root, message, sig)
-		//fmt.Println()
+
 		verifyTime := time.Since(verifyStart)
 		verifySum += verifyTime
-		//fmt.Printf("Verify in %v\n", verifyTime)
+
 		if verifyTime > maxver {
 			maxver = verifyTime
 			fmt.Printf("Currently max verify time: %v\n", maxver)
@@ -92,7 +87,6 @@ func TestLMSApp(t *testing.T) {
 			failure++
 			return
 		}
-
 	}
 	fmt.Println()
 	fmt.Printf("Success %v, failure %v\n", success, failure)
@@ -101,7 +95,6 @@ func TestLMSApp(t *testing.T) {
 	fmt.Printf("Max signature time: %v\n", maxsig)
 	fmt.Printf("Average verification time: %v\n", verifySum/(1<<H))
 	fmt.Printf("Max verify time: %v\n", maxver)
-
 }
 
 func TestLMSStdOps(t *testing.T) {
