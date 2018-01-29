@@ -7,7 +7,6 @@ import (
 	"github.com/LoCCS/lmots/rand"
 )
 
-//func BenchmarkLMSSetup(b *testing.B) {
 func BenchmarkNewMerkleAgent(b *testing.B) {
 	const H = 16
 	seed := make([]byte, lmots.N)
@@ -21,7 +20,7 @@ func BenchmarkNewMerkleAgent(b *testing.B) {
 }
 
 func BenchmarkLMSStdOps(b *testing.B) {
-	const H = 8
+	const H = 16 // large to ensure (1<<H)>b.N
 	seed := make([]byte, lmots.N)
 	rand.Reader.Read(seed)
 	merkleAgent, err := NewMerkleAgent(H, seed)
@@ -36,7 +35,7 @@ func BenchmarkLMSStdOps(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		_, sig, err := Sign(merkleAgent, msg)
 		if nil != err {
-			if err.Error() == "Warning: this is the last signature" {
+			if ErrOutOfKeys == err {
 				b.Log("merkleAgent has been worn out, aborting...")
 				break
 			} else {

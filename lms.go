@@ -2,7 +2,6 @@ package lms
 
 import (
 	"bytes"
-	"errors"
 
 	"github.com/LoCCS/lmots"
 	"github.com/LoCCS/lmots/rand"
@@ -22,7 +21,7 @@ func Sign(agent *MerkleAgent, hash []byte) (*lmots.PrivateKey, *MerkleSig, error
 	merkleSig := new(MerkleSig)
 
 	if agent.Exhausted() {
-		return nil, nil, errors.New("key pairs on the tree are totally used")
+		return nil, nil, ErrOutOfKeys
 	}
 
 	sk, err := agent.keyItr.Next()
@@ -32,7 +31,7 @@ func Sign(agent *MerkleAgent, hash []byte) (*lmots.PrivateKey, *MerkleSig, error
 
 	merkleSig.LMSig, err = lmots.Sign(rand.Reader, sk, hash)
 	if nil != err {
-		return nil, nil, errors.New("unexpected error occurs during signing")
+		return nil, nil, err
 	}
 
 	// fill in the public key deriving leaf
@@ -47,13 +46,7 @@ func Sign(agent *MerkleAgent, hash []byte) (*lmots.PrivateKey, *MerkleSig, error
 
 	// update auth path
 	agent.Traverse()
-	/*
-		err = nil
-		if agent.Exhausted() {
-			err = errors.New("Warning: this is the last signature")
-		}*/
 
-	//return sk, merkleSig, err
 	return sk, merkleSig, nil
 }
 

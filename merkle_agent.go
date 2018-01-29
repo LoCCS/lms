@@ -3,7 +3,6 @@ package lms
 import (
 	"bytes"
 	"encoding/gob"
-	"errors"
 	"math"
 )
 
@@ -22,7 +21,7 @@ type MerkleAgent struct {
 // by running the generate key and setup procedure
 func NewMerkleAgent(H uint32, seed []byte) (*MerkleAgent, error) {
 	if H < 2 {
-		return nil, errors.New("H should be larger than 1")
+		return nil, ErrInvalidHeight
 	}
 
 	agent := new(MerkleAgent)

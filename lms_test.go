@@ -2,7 +2,6 @@ package lms
 
 import (
 	"fmt"
-	"strings"
 	"testing"
 	"time"
 
@@ -49,9 +48,14 @@ func TestLMSApp(t *testing.T) {
 
 		signTime := time.Since(signStart)
 		if err != nil {
-			fmt.Println(err)
-			if !strings.Contains(err.Error(), "Warning") {
-				continue
+			if err == ErrOutOfKeys {
+				if (1 << H) != i {
+					t.Fatalf("invalid i: want %v, got %v", (1 << H), i)
+				}
+				fmt.Printf("%s at i = %v", err, i)
+				break
+			} else {
+				t.Fatal(err)
 			}
 		}
 
