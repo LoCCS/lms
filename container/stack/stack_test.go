@@ -18,7 +18,7 @@ func TestStack(t *testing.T) {
 
 	i := 0
 	for !stack.Empty() {
-		top, nextTop := stack.Peek2()
+		top, nextTop := stack.Peek(), stack.Peek2()
 
 		nextTopValue := -1
 		if nil != nextTop {
