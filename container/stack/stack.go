@@ -50,19 +50,13 @@ func (s *Stack) Peek() interface{} {
 	return nil
 }
 
-// Peek returns the two elements in the top of the s
-func (s *Stack) Peek2() (interface{}, interface{}) {
-	var x, y interface{}
-
-	if nil != s.top {
-		x = s.top.Value
-
-		if nil != s.top.next {
-			y = s.top.next.Value
-		}
+// Peek2 returns the element below the top of the stack
+func (s *Stack) Peek2() interface{} {
+	if (nil != s.top) && (nil != s.top.next) {
+		return s.top.next.Value
 	}
 
-	return x, y
+	return nil
 }
 
 // Len returns the size of the s
@@ -76,10 +70,10 @@ func (s *Stack) Empty() bool {
 }
 
 // ValueSlice returns all elements of stack in slice
-func (s *Stack) ValueSlice() []interface{}{
+func (s *Stack) ValueSlice() []interface{} {
 	vs := make([]interface{}, s.size)
 	ele := s.top
-	for i := s.size - 1; i >= 0; i--{
+	for i := s.size - 1; i >= 0; i-- {
 		vs[i] = ele.Value
 		ele = ele.next
 	}

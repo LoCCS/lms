@@ -80,9 +80,8 @@ func (th *TreeHashStack) Update(I []byte, numOp uint32, nodeHouse [][]byte) {
 	for (numOp > 0) && !th.IsCompleted() {
 		// may have nodes at the same height to merge
 		if th.nodeStack.Len() >= 2 {
-			e1, e2 := th.nodeStack.Peek2()
-			node1 := e1.(*Node)
-			node2 := e2.(*Node)
+			node1 := th.nodeStack.Peek().(*Node)
+			node2 := th.nodeStack.Peek2().(*Node)
 
 			// merge the nodes at the same height
 			if node1.Height == node2.Height {
