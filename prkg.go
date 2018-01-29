@@ -2,6 +2,7 @@ package lms
 
 import (
 	"bytes"
+	cryptorand "crypto/rand"
 	"encoding/gob"
 
 	"github.com/LoCCS/lmots"
@@ -27,6 +28,10 @@ func NewKeyIterator(compactSeed []byte) *KeyIterator {
 	prkg.rng = rand.New(compactSeed)
 	prkg.offset = 0
 	prkg.LMOpts = lmots.NewLMOpts()
+	// to be remove the LM-OTS library
+	if _, err := cryptorand.Read(prkg.LMOpts.I[:]); nil != err {
+		return nil
+	}
 
 	return prkg
 }

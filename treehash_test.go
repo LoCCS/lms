@@ -26,7 +26,8 @@ func TestTreeHashIndexing(t *testing.T) {
 
 	i := 0
 	for !ths.IsCompleted() {
-		ths.Update(1, nodeCache)
+		//ths.Update(1, nodeCache)
+		ths.Update(nil, 1, nodeCache)
 		node := ths.Top()
 
 		if hVec[i] != node.Height {

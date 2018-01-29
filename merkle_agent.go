@@ -45,18 +45,18 @@ func NewMerkleAgent(H uint32, seed []byte) (*MerkleAgent, error) {
 	}
 	globalStack := NewTreeHashStack(0, H)
 	for h := uint32(0); h < H; h++ {
-		globalStack.Update(1, agent.nodeHouse)
+		globalStack.Update(agent.keyItr.LMOpts.I[:], 1, agent.nodeHouse)
 		agent.treeHashStacks[h] = NewTreeHashStack(0, h)
 
 		agent.treeHashStacks[h].nodeStack.Push(globalStack.Top())
 		agent.treeHashStacks[h].SetLeaf(1 << h)
 
-		globalStack.Update((1<<(h+1))-1, agent.nodeHouse)
+		globalStack.Update(agent.keyItr.LMOpts.I[:], (1<<(h+1))-1, agent.nodeHouse)
 		agent.auth[h] = make([]byte, len(globalStack.Top().Nu))
 		copy(agent.auth[h], globalStack.Top().Nu)
 	}
 
-	globalStack.Update(1, agent.nodeHouse)
+	globalStack.Update(agent.keyItr.LMOpts.I[:], 1, agent.nodeHouse)
 	agent.Root = make([]byte, len(globalStack.Top().Nu))
 	copy(agent.Root, globalStack.Top().Nu)
 
@@ -96,7 +96,8 @@ func (agent *MerkleAgent) refreshTreeHashStacks() {
 				focus = h
 			}
 		}
-		agent.treeHashStacks[focus].Update(1, agent.nodeHouse)
+		//agent.treeHashStacks[focus].Update(1, agent.nodeHouse)
+		agent.treeHashStacks[focus].Update(agent.keyItr.LMOpts.I[:], 1, agent.nodeHouse)
 	}
 }
 
