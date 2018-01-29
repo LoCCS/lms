@@ -46,4 +46,5 @@ Kind advices and contributions are always welcomed, but to avoid chaos or destab
 
 <a name="dev-res"></a>
 ## Development Resources  
-+ [Github](https://github.com/LoCCS/lms) 
++ [Github](https://github.com/LoCCS/lms)   
++ [Docs](https://www.godoc.org/github.com/LoCCS/lms)  
