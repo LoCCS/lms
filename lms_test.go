@@ -15,7 +15,6 @@ const (
 )
 
 func TestLMSApp(t *testing.T) {
-	//seed, err := rand.RandSeed()
 	seed := make([]byte, lmots.N)
 	rand.Reader.Read(seed)
 	agentStart := time.Now()
@@ -91,7 +90,6 @@ func TestLMSApp(t *testing.T) {
 			success++
 		} else {
 			failure++
-			fmt.Println(i, "hello")
 			return
 		}
 

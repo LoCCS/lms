@@ -21,7 +21,7 @@ func BenchmarkNewMerkleAgent(b *testing.B) {
 }
 
 func BenchmarkLMSStdOps(b *testing.B) {
-	const H = 3
+	const H = 8
 	seed := make([]byte, lmots.N)
 	rand.Reader.Read(seed)
 	merkleAgent, err := NewMerkleAgent(H, seed)
@@ -33,10 +33,15 @@ func BenchmarkLMSStdOps(b *testing.B) {
 	msg := make([]byte, lmots.N)
 	rand.Reader.Read(msg)
 	// what if no more leaf to use in the Merkle agent
-	for i := 0; (i < b.N) && (i < (1<<H)-1); i++ {
+	for i := 0; i < b.N; i++ {
 		_, sig, err := Sign(merkleAgent, msg)
-		if (nil != err) && (err.Error() != "Warning: this is the last signature") {
-			b.Fatalf("error in signing %x: %s", msg, err)
+		if nil != err {
+			if err.Error() == "Warning: this is the last signature" {
+				b.Log("merkleAgent has been worn out, aborting...")
+				break
+			} else {
+				b.Fatalf("error in signing %x: %s", msg, err)
+			}
 		}
 
 		if !Verify(merkleAgent.Root, msg, sig) {
